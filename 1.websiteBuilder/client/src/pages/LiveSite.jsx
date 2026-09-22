@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { serverUrl } from '../App'
-import axios from 'axios'
+import { useState } from "react"
+import { useEffect } from "react"
+import { useParams } from "react-router-dom"
+import axios from "axios"
+import { serverUrl } from "../App"
 export const LiveSite = () => {
     const {id}=useParams()
     const [html,setHtml]=useState("")
@@ -9,7 +10,8 @@ export const LiveSite = () => {
         useEffect(() => {
         const handleGetWebsite = async () => {
             try {
-                const result = await axios.get(`${serverUrl}/api/website/get-by-id/${id}`, { withCredentials: true })
+                
+                const result = await axios.get(`${serverUrl}/api/website/get-by-slug/${id}`, { withCredentials: true })
                 console.log(result)
           setHtml(result.data.latestCode)
             } catch (error) {
@@ -29,8 +31,8 @@ export const LiveSite = () => {
     }
 
   return (
-    <div>
-        <iframe  title="Live site " src="" />
+    <div className='h-screen flex items-center justify-center bg-black text-white'>
+        <iframe  title="Live site" srcDoc={html} className='w-screen h-screen border-none' sandbox='allow-scripts allow-same-origin allow-forms'/>
       
     </div>
   )

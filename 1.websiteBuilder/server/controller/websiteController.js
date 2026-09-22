@@ -324,25 +324,46 @@ export const getAll=async(req,res)=>{
 
 }
 
-export  const deploy=async()=>{
+export  const deploy=async(req,res)=>{
     try{
-        const website = await website.findOne({
+        const website = await Website.findOne({
             _id:req.params.id,
             user: req.user._id
         })
         if(!website){
+        console.log("hKK")
             return res.status(400).json({message:"website not found"})
         }
         if(!website.slug){
-            website.slug=website.title.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,60)=website._id.toString().slice(-5)
-        }
+             console.log("KhK")
+            website.slug=website.title.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,60)+website._id.toString().slice(-5)
+        } 
+         console.log("KKhhK")
         website.deployed=true
-        website.deployeUrl=`${process.env.FRONTEND_URL}/site/${website.slug}`
-    await website.save();
-    res.status(200).json({url:website.deployeUrl})
+        website.deployUrl=`${process.env.FRONTEND_URL}/site/${website.slug}`
+   console.log(website.deployUrl) 
+   await website.save();
+   return res.status(200).json({url: website.deployUrl})
     }
     catch(error){
         return res.status(500).json({message:`deplyed website error ${error}`})
 
     }
+}
+export const getWebsiteBySlug=async(req,res)=>{
+      try{
+        const website = await Website.findOne({
+            slug:req.params.slug,
+            user: req.user._id
+        })
+        if(!website.slug){
+            // website.slug=website.title.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,60)+website._id.toString().slice(-5)
+                    return res.status(400).json({message:"website not found"})
+        }
+        return res.status(200).json(website);}
+
+catch(error){
+            return res.status(500).json({message:`get by slug website error ${error}`})
+
+}
 }

@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useState } from 'react'
 import { Coins } from "lucide-react"
 import { useSelector, useDispatch } from "react-redux"
-import axios from 'axios'
+import axios, { Axios } from 'axios'
 import { useEffect } from 'react'
 import LoginModel from '../components/LoginModel.jsx'
 import { serverUrl } from '../App.jsx'
@@ -16,7 +16,7 @@ const Home = () => {
         "Fully Responsive Layouts",
         "Production Ready Output",
     ]
-
+const [websites,setWebsites]=useState(null)
     const [openLogin, setOpenLogin] = useState(false)
     const [openProfile, setOpenProfile] = useState(false)
     const { userData } = useSelector((state) => state.user)
@@ -36,7 +36,24 @@ const Home = () => {
             }
         }
     }
-
+ useEffect(()=>{
+    if(!userData){
+        return;
+    }
+    const handleGetAllWebsites=async()=>{
+     
+      try {
+        const result=await axios.get(`${serverUrl}/api/website/get-all`,{withCredentials:true})
+        console.log(result)
+        setWebsites(result.data || [])
+        
+      } catch (error) {
+      
+        console.log(error)
+      }
+    } 
+   handleGetAllWebsites();
+  },[userData])
     return (
         <div className='relative min-h-screen bg-[#040404] text-white overflow-hidden'>
             <motion.div
@@ -47,12 +64,14 @@ const Home = () => {
                 <div className=' max-w-7xl mx-auto px-6 py-4 flex justify-between items-center '>
                     <div className='text-lg font-semibold'>GiveWeb.ai</div>
                     <div className='flex items-center gap-5'>
-                        <div className='hidden md:inline text-sm text-zinc-400 hover:text-white cursor-pointer'>
+                        <div className='hidden md:inline text-sm text-zinc-400 hover:text-white cursor-pointer'
+                        onClick={()=>navigate("/pricing")}>
                             pricing
                         </div >
-                        {userData && <div className='hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm cursor-pointer hover:bg-white/10 transition'>
+                        {userData && <div className='hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm cursor-pointer hover:bg-white/10 transition'  onClick={()=>navigate("/pricing")}>
                             <Coins className="text-yellow-400" size={14} />
-                            <span className='text-zinc-300  '>credits</span>
+                            <span className='text-zinc-300  '
+                            >credits</span>
                             <span>{userData.credits}</span>
                             <span className='font-semibold'>+</span>
                         </div>}
@@ -72,7 +91,7 @@ const Home = () => {
                                                 <p className='text-sm font-medium truncate'>{userData.name}</p>
                                                 <p className='text-xs text-zinc-500 truncate'>{userData.email}</p>
                                             </div>
-                                            <button type="button" className='md:hidden w-full px-4 py-4 flex items-center gap-2 text-sm border-b border-white/10 hover:bg-white/15'>
+                                            <button  onClick={()=>navigate("/pricing")} type="button" className='md:hidden w-full px-4 py-4 flex items-center gap-2 text-sm border-b border-white/10 hover:bg-white/15'>
                                                 <Coins className="text-yellow-400" size={14} />
                                                 <span className='text-zinc-300'>credits</span>
                                                 <span>{userData.credits}</span>
@@ -104,12 +123,11 @@ const Home = () => {
                     Describe your idea and let AI generate a Modern, responsive, production-ready website.
                 </motion.p>
 
-                <button type="button" className='px-10 py-4 rounded-xl bg-white text-black font-semibold hover:scale-105 transition mt-12' onClick={()=>navigate("/dashboard")}>
+                <button type="button" className='px-10 py-4 rounded-xl bg-white text-black font-semibold hover:scale-105 transition mt-12' onClick={()=>userData?navigate("/dashboard"):setOpenLogin(true)}>
                     {userData?"Go to dashboard":"Get Started"}
                 </button>
             </section>
-
-            <section className='max-w-7xl mx-auto px-6 pb-32'>
+{!userData &&             <section className='max-w-7xl mx-auto px-6 pb-32'>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-10'>
                     {highlights.map((highlight, i) => (
                         <motion.div
@@ -126,7 +144,32 @@ const Home = () => {
                     ))}
                 </div>
             </section>
+}
+{userData && websites?.length>0 && (
+<section className='max-w-7xl mx-auto px-6 pb-32 '>
+    <h3 className='text-2xl font-semibold mb-6'>Your Websites</h3>
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        {websites.slice(0,3).map((w,i)=>(
+<motion.div 
+key={w._id}
+whileHover={{y:-6}}
+onClick={()=>navigate(`/editor/${w._id}`)}
+className='cursor-pointer rounded-2xl bg-white/5 border border-white/20 overflow-hidden'
+>
+    <div className='h-40 bg-black'>
+        <iframe srcDoc={w.latestCode} className='w-[140%] h-[140%] scale-[0.72] origin-top-left pointer-events-none bg-white' />
+    </div>
+    <div className='p-4'><h3 className='text-base font-semibold line-clamp-2'>{w.title}</h3>
+  <p className='text-xs text-zinc-400'>
+    Last Updated  {""} {new Date(w.updatedAt).toLocaleDateString()}
+  </p></div>
 
+</motion.div>
+        ))}
+    </div>
+</section>
+)
+}
             <footer className='border-t border-white/10 py-10 text-center text-sm text-zinc-500'>
                 &copy; {new Date().getFullYear()} GenWeb.ai
             </footer>

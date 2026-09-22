@@ -45,6 +45,16 @@ setMessages((m)=>[...m,{role:"ai",content:result.data.message}])
         
     }
 };
+  const handleDeploy=async(id)=>{
+    try{
+      const result=await axios.get(`${serverUrl}/api/website/deploy/${id}`,{withCredentials:true})
+      window.open(`${result.data.url}`,"_blank")
+     
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
 useEffect(() => {
     if (!updateLoading) return;
@@ -130,16 +140,18 @@ useEffect(() => {
                 <div className='h-14 px-4 flex justify-between items-center border-b border-white/10 bg-black/80'>
                     <span className='text-sm text-zinc-400'>Line Preview</span>
                     <div className='flex items-center gap-2'>
-                        <button className='flex items-center gap-2 px-4 py-1.5 rounded-lg bg-linear-to-r from-indigo-500 to-purple-500 text-sm font-semibold hover:scale-105 transition'>
+                      {website.deployed? "": <button onClick={handleDeploy} className='flex items-center gap-2 px-4 py-1.5 rounded-lg bg-linear-to-r from-indigo-500 to-purple-500 text-sm font-semibold hover:scale-105 transition'>
                             <Rocket size={14} />Deploy
-                        </button>
+                        </button>}
                         <button className='p-2 lg:hidden' onClick={()=>setShowChat(true)}><MessageSquare/></button>
                         <button className='p-2' onClick={() => setShowCode(true)}><Code2 size={18} /></button>
                         <button className='p-2' onClick={() => setShowPreviewed(true)}><Monitor size={18} /></button>
                     </div>
                 </div>
-                <iframe ref={iframeRef} className="flex-1 w-full border-0" title="Website preview" />
+                <iframe ref={iframeRef} className="flex-1 w-full border-0" title="Website preview"  sandbox='allow-scripts allow-same-origin allow-forms' />
             </div>
+            
+
             <AnimatePresence>
                 {showCode && (
                     <motion.div
@@ -165,7 +177,7 @@ useEffect(() => {
                     {showPreviewed &&
                    (<motion.div
                     className='fixed inset-0 z-[9999] bg-black' >
-                        <iframe className='w-full h-full bg-white' srcDoc={code} />
+                        <iframe className='w-full h-full bg-white' srcDoc={code}  sandbox='allow-scripts allow-same-origin allow-forms' />
                         <button className='absolute top-4 right-4 p-2 bg-black/70 rounded-lg' onClick={()=>setShowPreviewed(false)}><X/></button>
                         </motion.div>)}
                  </AnimatePresence>

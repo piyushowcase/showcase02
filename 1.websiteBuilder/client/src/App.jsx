@@ -8,6 +8,8 @@ import { Navigate } from 'react-router-dom';
 import useGetCurrentUser from './hooks/useGetCurrentUser'
 import { useSelector } from 'react-redux';
 import WebsiteEditor from './pages/WebsiteEditor';
+import { LiveSite } from './pages/liveSite';
+import Pricing from './pages/pricing';
 
 const App = () => {
   useGetCurrentUser()
@@ -19,7 +21,9 @@ const App = () => {
         <Route path='/dashboard' element={userData ? <Dashboard /> : <Home />}></Route>
       <Route path='/generate' element ={userData?<Generate/>:<Home/>}/>
     <Route path='/editor/:id' element ={userData?<WebsiteEditor/>:<Home/>}/>
-        {/* <Route path='/site/:id' element ={userData?<LiveSite/>:<Home/>}/> */}
+        <Route path='/site/:id' element ={userData?<LiveSite/>:<Home/>}/>
+              <Route path='/pricing' element ={userData?<Pricing/>:<Home/>}/>
+
         </Routes>
             </BrowserRouter>
            
