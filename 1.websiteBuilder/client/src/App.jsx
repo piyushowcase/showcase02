@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-export const serverUrl = 'http://localhost:5000'
+export const serverUrl = 'https://showcase02.onrender.com'
 import Generate from "./pages/Generate"
 import Dashboard from './pages/Dashboard';
 import { Navigate } from 'react-router-dom';
