@@ -8,9 +8,8 @@ import { Navigate } from 'react-router-dom';
 import useGetCurrentUser from './hooks/useGetCurrentUser'
 import { useSelector } from 'react-redux';
 import WebsiteEditor from './pages/WebsiteEditor';
-import { LiveSite } from './pages/liveSite';
-import Pricing from './pages/pricing';
-
+import { LiveSite } from './pages/LiveSite'; // Updated casing
+import Pricing from './pages/Pricing';      // Updated casing
 const App = () => {
   useGetCurrentUser()
   const { userData } = useSelector((state) => state.user)
